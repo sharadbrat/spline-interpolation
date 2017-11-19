@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>math.js | plot</title>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.5/math.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://wzrd.in/standalone/function-plot@1.14.0"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+  <form id="form">
+    <label for="eq">Enter an equation:</label>
+    <input type="text" id="source" value="x*sin(x)"/>
+    <input type="submit" value="Draw"/>
+  </form>
+  <h1>Initial</h1>
+  <div id="initial"></div>
+  <h1>Interpolated</h1>
+  <div id="interpolated"></div>
+  <h1>Together</h1>
+  <div id="together"></div>
+  <br>  
+  <div>Difference is:</div>
+  <div id="difference"></div>
+  <br>
+  <div>Splines are:</div>
+  <div id="splines"></div>
+  <script src="./script.js"></script>
+</body>
+</html>

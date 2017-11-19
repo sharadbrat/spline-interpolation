@@ -168,6 +168,10 @@ function mathModule(equationSourceId) {
 const facade = mathModule('source');
 facade.init(-10, 10, 2);
 
+function removeRedunant(eqStr) {
+  return eqStr.replace(/(?<=\d{3})\d+/g, '').replace(/- -/g, '+ ').replace(/\+ -/g, '- ');
+}
+
 function drawDifference(selector) {
   document.querySelector(selector).innerHTML = `<span>${facade.getMaxDifference()}</span>`
 }
@@ -175,7 +179,7 @@ function drawDifference(selector) {
 function drawSplines(selector) {
   const splines = facade.cubicSpline();
   const renderElem = document.querySelector(selector);
-  renderElem.innerHTML = '<div>' + splines.join('</div><div>') + '</div>';
+  renderElem.innerHTML = '<div>' + removeRedunant(splines.join('</div><div>')) + '</div>';
 }
 
 function draw() {

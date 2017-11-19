@@ -9,9 +9,25 @@
 </head>
 <body>
   <form id="form">
-    <label for="eq">Enter an equation:</label>
-    <input type="text" id="source" value="x*sin(x)"/>
-    <input type="submit" value="Draw"/>
+    <div class="form-group">
+      <label for="eq">Enter an equation:</label>
+      <input type="text" id="source" value="x*sin(x)"/>
+    </div>
+    <div class="form-group">
+      <label for="from">From: </label>
+      <input type="number" step="0.01" id="from" value="-10" />
+    </div>
+    <div class="form-group">
+      <label for="to">To: </label>
+      <input type="number" step="0.01" id="to" value="10" />
+    </div>
+    <div class="form-group">
+      <label for="step">Step: </label>
+      <input type="number" step="0.01" id="step" value="2" />
+    </div>
+    <div class="form-group">
+      <input type="submit" value="Draw"/>
+    </div>
   </form>
   <h1>Initial</h1>
   <div id="initial"></div>

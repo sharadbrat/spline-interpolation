@@ -1,6 +1,9 @@
 function mathModule(equationSourceId) {
   
   const source = document.getElementById(equationSourceId);
+  let fromXSource;
+  let toXSource;
+  let stepSource;
 
   const module = {}
 
@@ -39,10 +42,17 @@ function mathModule(equationSourceId) {
     }
   }
 
-  module.init = (_fromX, _toX, _step) => {
-    fromX = _fromX;
-    toX = _toX;
-    step = _step;
+  module.init = (_fromXSource, _toXSource, _stepSource) => {
+    fromXSource = document.getElementById(_fromXSource);
+    toXSource = document.getElementById(_toXSource);
+    stepSource = document.getElementById(_stepSource);
+    module.updateBounds();
+  }
+
+  module.updateBounds = () => {
+    fromX = +fromXSource.value;
+    toX = +toXSource.value;
+    step = +stepSource.value;
   }
 
   module.getMaxDifference = () => {
@@ -166,7 +176,7 @@ function mathModule(equationSourceId) {
 }
 
 const facade = mathModule('source');
-facade.init(-10, 10, 2);
+facade.init('from', 'to', 'step');
 
 function removeRedunant(eqStr) {
   return eqStr.replace(/(?<=\d{3})\d+/g, '').replace(/- -/g, '+ ').replace(/\+ -/g, '- ');
@@ -183,6 +193,9 @@ function drawSplines(selector) {
 }
 
 function draw() {
+  document.getElementById('initial').innerHTML = '';
+  document.getElementById('interpolated').innerHTML = '';
+  document.getElementById('together').innerHTML = '';
   facade.drawInitial('#initial');
   facade.drawInterpolated('#interpolated');
   facade.drawTogether('#together');
@@ -192,7 +205,10 @@ function draw() {
 
 document.getElementById('form').onsubmit = function (event) {
   event.preventDefault();
+  facade.updateBounds();
   draw();
 };
+
+document
 
 draw();

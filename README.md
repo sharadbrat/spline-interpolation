@@ -2,7 +2,7 @@
 
 This is a study project, that shows basic usage of cubic spline interpolation in maths.
 
-[Demo](http://google.com)
+[Demo](https://sharadbrat.github.io/spline-interpolation)
 
 Technology stack:
 

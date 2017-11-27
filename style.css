@@ -21,3 +21,15 @@ a {
 	margin-bottom: 20px;
 	display: block;
 }
+
+td {
+	border: 1px solid black;
+}
+
+tr {
+	border: 1px solid black;
+}
+
+table {
+	border-collapse: collapse;
+}

@@ -5,6 +5,11 @@ function mathModule(equationSourceId) {
   let toXSource;
   let stepSource;
 
+  let A = [];
+  let B = [];
+  let C = [];
+  let D = [];
+
   const module = {}
 
   let fromX = -10;
@@ -40,6 +45,10 @@ function mathModule(equationSourceId) {
 
       maxDifference = difference > maxDifference ? difference : maxDifference;
     }
+  }
+
+  module.getCoeffs = () => {
+    return {A, B, C, D};
   }
 
   module.init = (_fromXSource, _toXSource, _stepSource) => {
@@ -115,6 +124,11 @@ function mathModule(equationSourceId) {
       res.push(`${d[i]} * (x - ${xn[i]}) ^ 3 + ${c[i]} * (x - ${xn[i]}) ^ 2 + ${b[i]} * (x - ${xn[i]}) + ${a[i]}`);
     }
 
+    A = a;
+    B = b;
+    C = c;
+    D = d;
+
     return res;
   }
 
@@ -178,10 +192,6 @@ function mathModule(equationSourceId) {
 const facade = mathModule('source');
 facade.init('from', 'to', 'step');
 
-function removeRedunant(eqStr) {
-  return eqStr.replace(/(?<=\d{3})\d+/g, '').replace(/- -/g, '+ ').replace(/\+ -/g, '- ');
-}
-
 function drawDifference(selector) {
   document.querySelector(selector).innerHTML = `<span>${facade.getMaxDifference()}</span>`
 }
@@ -189,7 +199,17 @@ function drawDifference(selector) {
 function drawSplines(selector) {
   const splines = facade.cubicSpline();
   const renderElem = document.querySelector(selector);
-  renderElem.innerHTML = '<div>' + removeRedunant(splines.join('</div><div>')) + '</div>';
+  const coeffs = facade.getCoeffs();
+  let res = '';
+  for (let i = 0; i < coeffs.A.length; i++) 
+    res += `<tr>
+              <td>${i}</td>
+              <td>${coeffs.A[i]}</td>
+              <td>${coeffs.B[i]}</td>
+              <td>${coeffs.C[i]}</td>
+              <td>${coeffs.D[i]}</td>
+            </tr>`
+  renderElem.innerHTML = res;
 }
 
 function draw() {
@@ -208,7 +228,5 @@ document.getElementById('form').onsubmit = function (event) {
   facade.updateBounds();
   draw();
 };
-
-document
 
 draw();

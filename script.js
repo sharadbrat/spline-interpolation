@@ -14,14 +14,35 @@ function mathModule(equationSourceId) {
 
   let fromX = -10;
   let toX = 10;
-  let step = 0.1;
+  let step = 20;
 
   let maxDifference = 0;
 
+  //  PRIVATE SECTION
+
+  function mapRes(res) {
+    return res.map(el => {
+      el.fn = simplifyFn(el.fn);
+      return el;
+    });
+  }
+
+  function simplifyFn(fn) {
+    let copy = `${fn}`;
+
+    copy = copy.replace(/- -/g, '+ ');
+    copy = copy.replace(/- \+/g, '- ');
+    copy = copy.replace(/\+ -/g, '- ');
+    copy = copy.replace(/\+ \+/g, '+ ');
+    copy = copy.replace(/(\+|-)\s*0\s*\*\s*\(.*\)\s*\^\s*\d/g, '');
+
+    return copy
+  }
+
   function getPoints() {
     const res = [];
-    for (let x = fromX; x <= toX; x = +(x + step).toFixed(3)) {
-      res.push(x);
+    for (let i = 0; i <= step; i++) {
+      res.push(fromX + i * ((toX - fromX) / step))
     }
     return res;
   }
@@ -47,28 +68,47 @@ function mathModule(equationSourceId) {
     }
   }
 
+  function getTruncatedCoeff(coeff) {
+    return coeff.toFixed(2);
+  }
+
+  function getTruncatedCoeffsArray(coeffs) {
+    return coeffs.map(c => getTruncatedCoeff(c));
+  }
+
+  //  PUBLIC SECTION
+
   module.getCoeffs = () => {
     return {A, B, C, D};
-  }
+  };
+
+  module.getTruncatedCoeffs = () => {
+    return {
+      A: getTruncatedCoeffsArray(A),
+      B: getTruncatedCoeffsArray(B),
+      C: getTruncatedCoeffsArray(C),
+      D: getTruncatedCoeffsArray(D)
+    }
+  };
 
   module.init = (_fromXSource, _toXSource, _stepSource) => {
     fromXSource = document.getElementById(_fromXSource);
     toXSource = document.getElementById(_toXSource);
     stepSource = document.getElementById(_stepSource);
     module.updateBounds();
-  }
+  };
 
   module.updateBounds = () => {
     fromX = +fromXSource.value;
     toX = +toXSource.value;
     step = +stepSource.value;
-  }
+  };
 
   module.getMaxDifference = () => {
     const tmp = maxDifference;
     maxDifference = 0;
-    return tmp;
-  }
+    return getTruncatedCoeff(tmp);
+  };
 
   module.resize = (res) => res.programmaticZoom([fromX - 1, toX + 1], [math.min(getValues()) - 1, math.max(getValues()) + 1]);
 
@@ -130,7 +170,7 @@ function mathModule(equationSourceId) {
     D = d;
 
     return res;
-  }
+  };
 
   module.getInterpolatedEquations = () => {
     const res = [];
@@ -146,7 +186,7 @@ function mathModule(equationSourceId) {
         color: '#f00' 
       });
     }
-    return res;
+    return mapRes(res);
   };
   
   module.drawInitial = (targetInitial) => {
@@ -163,10 +203,12 @@ function mathModule(equationSourceId) {
   };
 
   module.drawInterpolated = (targetInterpolated) => {
-    const res = functionPlot({
+    const data = {
       target: targetInterpolated,
       data: module.getInterpolatedEquations()
-    });
+    };
+
+    const res = functionPlot(data);
 
   };
 
@@ -183,13 +225,14 @@ function mathModule(equationSourceId) {
       target: targetTogether,
       data: data
     });
-  }
+  };
 
   return module;
 
 }
 
 const facade = mathModule('source');
+
 facade.init('from', 'to', 'step');
 
 function drawDifference(selector) {
@@ -197,11 +240,10 @@ function drawDifference(selector) {
 }
 
 function drawSplines(selector) {
-  const splines = facade.cubicSpline();
   const renderElem = document.querySelector(selector);
-  const coeffs = facade.getCoeffs();
+  const coeffs = facade.getTruncatedCoeffs();
   let res = '';
-  for (let i = 0; i < coeffs.A.length; i++) 
+  for (let i = 0; i < coeffs.A.length; i++)
     res += `<tr>
               <td>${i}</td>
               <td>${coeffs.A[i]}</td>
@@ -223,7 +265,7 @@ function draw() {
   drawSplines('#splines');
 }
 
-document.getElementById('form').onsubmit = function (event) {
+document.getElementById('form').onsubmit = (event) => {
   event.preventDefault();
   facade.updateBounds();
   draw();

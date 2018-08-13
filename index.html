@@ -2,58 +2,136 @@
 <html>
 <head>
   <title>spline interpolation</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.5/math.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-  <script src="https://wzrd.in/standalone/function-plot@1.14.0"></script>
-  <link rel="stylesheet" type="text/css" href="./style.css">
+  <script src="./lib/math.min.js"></script>
+  <script src="./lib/d3.min.js"></script>
+  <script src="./lib/function-plot@1.14.0.js"></script>
+  <link rel="stylesheet" type="text/css" href="./css/reset.css">
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
-  <a href="https://github.com/sharadbrat/spline-interpolation">github</a>
-  <form id="form">
-    <div class="form-group">
-      <label for="eq">Enter an equation:</label>
-      <input type="text" id="source" value="x*sin(x)"/>
+  <header class="app-header">
+    <img class="app-header__logo" src="./assets/logo.svg"/>
+    <h1 class="app-header__heading">Spline interpolation</h1>
+  </header>
+  <main class="app-main">
+    <section class="section app-description">
+      <div class="container">
+        <div class="app-description__group">
+          <h2 class="app-description__heading">What is that?</h2>
+          <p class="app-description__article"><span class="app-description__article_italic">In the mathematical field of numerical analysis, Spline interpolation is a form of interpolation where the interpolant is a special type of piecewise polynomial called a spline. Spline interpolation is often preferred over polynomial interpolation because the interpolation error can be made small even when using low degree polynomials for the spline. Spline interpolation avoids the problem of Runge's phenomenon, in which oscillation can occur between points when interpolating using high degree polynomials.</span> (C) <a href="https://en.wikipedia.org/wiki/Spline_interpolation">Wikipedia</a></p>
+        </div>
+        <div class="app-description__group">
+          <h2 class="app-description__heading">Why is this needed?</h2>
+          <p class="app-description__article">The main purpose of spline interpolation is to decrease the amount of calculations for interpolated object in case of appearing of additional points.</p>
+        </div>
+        <div class="app-description__group">
+          <h2 class="app-description__heading">What is that app for?</h2>
+          <p class="app-description__article">In this tiny application the very basic principles of spline interpolation are represented. The main goal of this app is to show, how complex functions shapes can be repeated by cubic spline interpolation. "Two-dimensional cubic spline-interpolation" is shown in the app.</p>
+        </div>
+        <div class="app-description__group">
+          <h2 class="app-description__heading">Ok. How it works?</h2>
+          <p class="app-description__article">Type in form below a correct equation (example: (x * ln(sin(x)) / (x ^ (1/2)) ), add some bounds and the amount of steps, in which the base equation will be divided, after that click the "Draw" button and enjoy beautiful plots and additional data.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section app-content">
+      <div class="container app-content__container">
+        <h1 class="app-content__heading">Equation form: </h1>
+        <div class="app-content__card">
+          <form class="app-content__form" id="form">
+            <div class="app-content__group">
+              <label class="app-content__label" for="source">Enter an equation:</label>
+              <input class="app-content__input" type="text" id="source" value="x*sin(x)"/>
+              <span class="app-content__input__focus-border"></span>
+            </div>
+            <div class="app-content__group">
+              <label class="app-content__label" for="from">Left boundary: </label>
+              <input class="app-content__input" type="number" step="0.01" id="from" value="-10" />
+              <span class="app-content__input__focus-border"></span>
+            </div>
+            <div class="app-content__group">
+              <label class="app-content__label" for="to">Right boundary: </label>
+              <input class="app-content__input" type="number" step="0.01" id="to" value="10" />
+              <span class="app-content__input__focus-border"></span>
+            </div>
+            <div class="app-content__group">
+              <label class="app-content__label" for="step">Number of points: </label>
+              <input class="app-content__input" type="number" step="1" id="step" value="20" />
+              <span class="app-content__input__focus-border"></span>
+            </div>
+            <input class="app-content__submit" type="submit" value="Draw"/>
+          </form>
+        </div>
+      </div>
+    </section>
+    <section class="section app-result">
+      <div class="container">
+
+        <h2 class="app-result__heading">Initial</h2>
+        <div class="app-result__group">
+          <div class="app-result__chart" id="initial"></div>
+          <p class="app-result__description">On this chart you can see the original function plot. Basing on this function, measurements are taken in several points (they are evenly distributed through the whole chart), the amount of the points is given in the form above.</p>
+        </div>
+        <h2 class="app-result__heading">Interpolated</h2>
+        <div class="app-result__group">
+          <div class="app-result__chart" id="interpolated"></div>
+          <p class="app-result__description">Here you can examine, how Spline interpolation works - it builds N - 1 (N is the number of points) function plots, which are connecting to each other very slightly. The larger amount of points there is, the more accurate will be the result.</p>
+        </div>
+        <h2 class="app-result__heading">Together</h2>
+        <div class="app-result__group">
+          <div class="app-result__chart" id="together"></div>
+          <p class="app-result__description">Finally we get original function plot (colored in blue) and spline interpolated function plot (colored in red), which tries to repeat the shape of the original one. Here you can see, how accurate this method is and what errors and artifacts are produced.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section app-stats">
+      <div class="container">
+        <h2 class="app-stats__table-heading">Coefficients:</h2>
+        <p class="app-stats__table-explanation">Each two dimensional cubic spline looks like this: C = a + b * x + c * x^2 + d * x^3, so here you can see all the coefficients (a, b, c, d) for all the built splines.</p>
+        <div class="app-stats__table-wrapper">
+          <table class="app-stats__table">
+            <thead>
+            <tr>
+              <td></td>
+              <td>A</td>
+              <td>B</td>
+              <td>C</td>
+              <td>D</td>
+            </tr>
+            </thead>
+            <tbody id="splines">
+            </tbody>
+          </table>
+        </div>
+        <h2 class="app-stats__difference-heading">Max difference:</h2>
+        <p class="app-stats__difference" id="difference"></p>
+        <p class="app-stats__difference-explanation">This is the maximum distance between two function plots.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="app-footer">
+    <!--<div class="app-footer__links">-->
+      <!--<a class="app-footer__link" title="Github project page" href="https://github.com/sharadbrat/spline-interpolation">-->
+        <!--<img class="app-footer__logo" src="./assets/github.png">-->
+      <!--</a>-->
+      <!--<a class="app-footer__link" title="Twitter account" href="https://github.com/sharadbrat/spline-interpolation">-->
+        <!--<img class="app-footer__logo" src="./assets/twitter.png">-->
+      <!--</a>-->
+      <!--<a class="app-footer__link" title="Facebook account" href="https://github.com/sharadbrat/spline-interpolation">-->
+        <!--<img class="app-footer__logo" src="./assets/facebook.png">-->
+      <!--</a>-->
+      <!--<a class="app-footer__link" title="Vk account" href="https://github.com/sharadbrat/spline-interpolation">-->
+        <!--<img class="app-footer__logo" src="./assets/vk.png">-->
+      <!--</a>-->
+      <!--<a class="app-footer__link" title="LinkedIn profile" href="https://github.com/sharadbrat/spline-interpolation">-->
+        <!--<img class="app-footer__logo" src="./assets/linkedIn.png">-->
+      <!--</a>-->
+    <!--</div>-->
+    <div class="app-footer__copyright">
+      <p class="app-footer__inscription">Copyright <a  class="app-footer__inscription-link" href="https://github.com/sharadbrat" title="Georgii Sharadze github profile">Georgii Sharadze</a> (C) 2018</p>
     </div>
-    <div class="form-group">
-      <label for="from">From: </label>
-      <input type="number" step="0.01" id="from" value="-10" />
-    </div>
-    <div class="form-group">
-      <label for="to">To: </label>
-      <input type="number" step="0.01" id="to" value="10" />
-    </div>
-    <div class="form-group">
-      <label for="step">Step: </label>
-      <input type="number" step="0.01" id="step" value="2" />
-    </div>
-    <div class="form-group">
-      <input type="submit" value="Draw"/>
-    </div>
-  </form>
-  <h1>Initial</h1>
-  <div id="initial"></div>
-  <h1>Interpolated</h1>
-  <div id="interpolated"></div>
-  <h1>Together</h1>
-  <div id="together"></div>
-  <br>  
-  <div>Max difference is:</div>
-  <div id="difference"></div>
-  <br>
-  <div>Coefficients:</div>
-  <table>
-    <thead>
-      <tr>
-        <td></td>
-        <td>A</td>
-        <td>B</td>
-        <td>C</td>
-        <td>D</td>
-      </tr>
-    </thead>
-    <tbody id="splines">
-    </tbody>
-  </table>
+  </footer>
   <script src="./script.js"></script>
 </body>
 </html>

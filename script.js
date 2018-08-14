@@ -231,15 +231,11 @@ function mathModule(equationSourceId) {
 
 }
 
-const facade = mathModule('source');
-
-facade.init('from', 'to', 'step');
-
-function drawDifference(selector) {
-  document.querySelector(selector).innerHTML = `<span>${facade.getMaxDifference()}</span>`
+function drawDifference(selector, difference) {
+  document.querySelector(selector).innerHTML = `<span>${difference}</span>`
 }
 
-function drawSplines(selector) {
+function drawSplines(selector, facade) {
   const renderElem = document.querySelector(selector);
   const coeffs = facade.getTruncatedCoeffs();
   let res = '';
@@ -254,21 +250,31 @@ function drawSplines(selector) {
   renderElem.innerHTML = res;
 }
 
-function draw() {
+function draw(facade) {
   document.getElementById('initial').innerHTML = '';
   document.getElementById('interpolated').innerHTML = '';
   document.getElementById('together').innerHTML = '';
   facade.drawInitial('#initial');
   facade.drawInterpolated('#interpolated');
   facade.drawTogether('#together');
-  drawDifference('#difference');
-  drawSplines('#splines');
+  drawDifference('#difference', facade.getMaxDifference());
+  drawSplines('#splines', facade);
 }
 
-document.getElementById('form').onsubmit = (event) => {
-  event.preventDefault();
-  facade.updateBounds();
-  draw();
-};
+(function initialize() {
+  const facade = mathModule('source');
 
-draw();
+  facade.init('from', 'to', 'step');
+
+  document.getElementById('form').onsubmit = (event) => {
+    event.preventDefault();
+    facade.updateBounds();
+    draw(facade);
+  };
+
+  document.querySelectorAll('.app-result__chart').forEach(chart => {
+    chart.addEventListener('scroll', (e) => e.preventDefault())
+  });
+
+  draw(facade);
+})();

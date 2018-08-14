@@ -198,6 +198,7 @@ html, body {
 
 .app-result__chart {
     align-self: center;
+    touch-action: manipulation;
 }
 
 .app-result__description {

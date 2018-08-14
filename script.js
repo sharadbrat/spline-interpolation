@@ -273,7 +273,7 @@ function draw(facade) {
   };
 
   document.querySelectorAll('.app-result__chart').forEach(chart => {
-    chart.addEventListener('scroll', (e) => e.preventDefault())
+    chart.addEventListener('touchmove', (e) => e.preventDefault())
   });
 
   draw(facade);
